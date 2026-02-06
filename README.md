@@ -21,35 +21,53 @@ This project implements an enterprise-grade multi-tenant SaaS platform around a 
 - Pydantic
 - Docker
 
-## Setup
+## 🚀 Getting Started for Developers
 
-1. **Environment Variables**:
-   Copy `.env.example` to `.env` and fill in the values.
+### 1. Clone the Repository
+```bash
+git clone https://github.com/kalesanskruti/Forsee.git
+cd Forsee
+```
 
-2. **Database Migrations (Alembic)**:
-   We use Alembic for database migrations.
-   
-   Initialize alembic (if not already):
-   ```bash
-   alembic init alembic
-   ```
-   
-   Update `alembic.ini` to point to your DB or use `env.py` to load from `core.config`.
-   
-   Generate a migration for the new SaaS tables:
-   ```bash
-   alembic revision --autogenerate -m "initial_saas_schema"
-   ```
-   
-   Apply migrations:
-   ```bash
-   alembic upgrade head
-   ```
+### 2. Set up Environment
+Create a `.env` file in the root directory. You can copy the example:
+Windows (PowerShell):
+```powershell
+Copy-Item .env.example .env
+```
+Mac/Linux:
+```bash
+cp .env.example .env
+```
 
-3. **Running**:
-   ```bash
-   docker-compose up --build
-   ```
+### 3. Run with Docker (Recommended)
+This will start the Database (PostgreSQL + TimescaleDB) and the API server.
+```bash
+docker-compose up --build
+```
+*Wait until you see "Application startup complete" in the logs.*
+
+### 4. Initialize Data (First Time Only)
+Open a new terminal window and run the seed script to populate the database with default datasets and schemas:
+```bash
+# Windows
+python scripts/seed_data.py
+
+# Mac/Linux
+python3 scripts/seed_data.py
+```
+
+### 5. Access the App
+- **API Documentation (Swagger UI)**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- **API Root**: [http://localhost:8000/api/v1](http://localhost:8000/api/v1)
+
+### 6. (Optional) Run Specific Components Locally
+If you want to run the API outside of Docker for debugging:
+1. Create a virtual environment: `python -m venv .venv`
+2. Activate it: `.venv\Scripts\Activate` (Windows) or `source .venv/bin/activate` (Mac/Linux)
+3. Install dependencies: `pip install -r requirements.txt`
+4. Start the server: `uvicorn main:app --reload`
+
 
 ## Key Features
 - **Multi-tenancy**: All resources are isolated by `org_id`.
