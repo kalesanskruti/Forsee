@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+.env
+.env.*
+.DS_Store
+datasets/models/*.pkl
+datasets/models/*.h5
+error_log.txt
+training.log
+postgres_data/
+coverage.xml
+*.log
+.pytest_cache/
