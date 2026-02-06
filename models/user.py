@@ -32,6 +32,9 @@ class User(Base, AuditMixin, SoftDeleteMixin):
     full_name = Column(String, index=True)
     is_active = Column(Boolean(), default=True)
     
+    oauth_provider = Column(String, default="local") # local, google
+    oauth_provider_id = Column(String, nullable=True)
+    
     role = Column(SqlEnum(Role), default=Role.VIEWER, nullable=False)
     
     org_id = Column(UUID(as_uuid=True), ForeignKey("organization.id"), nullable=False)

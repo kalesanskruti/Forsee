@@ -24,6 +24,11 @@ class Asset(Base, AuditMixin, SoftDeleteMixin, TenantMixin):
     assigned_model_id = Column(UUID(as_uuid=True), ForeignKey("ml_model.id"), nullable=True)
     input_schema_id = Column(UUID(as_uuid=True), ForeignKey("input_schema.id"), nullable=True)
     
+    # Intelligence Fields
+    autonomy_level = Column(String, default="ADVISORY") # See AutonomyLevel Enum in intelligence.py
+    criticality_score = Column(Integer, default=1) # 1-10
+    parent_asset_id = Column(UUID(as_uuid=True), ForeignKey("asset.id"), nullable=True) # Tree structure basic
+    
     # Relationships
     organization = relationship("Organization", back_populates="assets")
 
@@ -72,6 +77,12 @@ class MLModel(Base, AuditMixin, SoftDeleteMixin, TenantMixin):
     input_feature_list = Column(JSON, nullable=True)
     window_size = Column(Integer, nullable=True)
     normalization_params = Column(JSON, nullable=True)
+    
+    # Governance & Lifecycle
+    governance_status = Column(String, default="APPROVED") # DRAFT, APPROVED, REJECTED, ARCHIVED
+    approved_by_user_id = Column(UUID(as_uuid=True), ForeignKey("user.id"), nullable=True)
+    is_transfer_learned = Column(Boolean, default=False)
+    parent_model_id = Column(UUID(as_uuid=True), ForeignKey("ml_model.id"), nullable=True) # For transfer learning lineage
     
     checksum = Column(String, nullable=True)
     training_job_id = Column(UUID(as_uuid=True), ForeignKey("training_job.id"), nullable=True)

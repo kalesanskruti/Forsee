@@ -9,3 +9,6 @@ pydantic-settings
 prometheus-fastapi-instrumentator
 python-json-logger
 slowapi
+httpx
+pytest
+pytest-asyncio
