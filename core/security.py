@@ -6,7 +6,7 @@ import hashlib
 
 from core.config import settings
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["pbkdf2_sha256", "bcrypt"], deprecated="auto")
 
 def create_access_token(
     subject: Union[str, Any], org_id: str, role: str, expires_delta: timedelta = None

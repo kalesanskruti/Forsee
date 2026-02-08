@@ -16,8 +16,7 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # Set all CORS enabled, valid for this assignment
-if settings.DATABASE_URL: # Just a check
-    pass
+app.add_middleware(OperationalMiddleware)
 
 app.add_middleware(
     CORSMiddleware,
@@ -25,10 +24,10 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
-app.add_middleware(OperationalMiddleware)
-
+# Include API Router
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
 # Metrics
@@ -37,15 +36,18 @@ Instrumentator().instrument(app).expose(app)
 @app.on_event("startup")
 def on_startup():
     # Initialize TimescaleDB (ensure extension and hypertables)
-    # WARNING: In production, this might be better placed in a migration script.
     from db.session import SessionLocal
     from db.timescaledb import init_timescaledb
     db = SessionLocal()
     try:
         init_timescaledb(db)
+    except Exception as e:
+        print(f"DB INIT SKIPPED: {e}")
     finally:
         db.close()
 
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
+
+

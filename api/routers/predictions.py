@@ -3,9 +3,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from api import deps
-from models.ml import Asset, Alert, Prediction
+from models.ml import Asset, Prediction
 from models.user import User, Organization, Role
-from models.platform import AuditLog
+from models.platform import AuditLog, Alert
 from ml.inference import engine
 from schemas.prediction import PredictionRequest, PredictionResponse
 from services.data_quality import data_quality_service

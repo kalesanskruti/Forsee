@@ -18,11 +18,13 @@ def login_access_token(
     db: Session = Depends(deps.get_db), form_data: OAuth2PasswordRequestForm = Depends()
 ) -> Any:
     user = db.query(User).filter(User.email == form_data.username).first()
-    if not user or not security.verify_password(form_data.password, user.hashed_password):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Incorrect email or password"
-        )
+    if not user:
+        print(f"LOGIN FAIL: User {form_data.username} not found")
+        raise HTTPException(status_code=400, detail="Incorrect email or password")
+    
+    if not security.verify_password(form_data.password, user.hashed_password):
+        print(f"LOGIN FAIL: Password mismatch for {form_data.username}")
+        raise HTTPException(status_code=400, detail="Incorrect email or password")
     if not user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
     

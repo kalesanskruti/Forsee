@@ -1,6 +1,7 @@
 from typing import Any, List
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session, or_
+from sqlalchemy import or_
+from sqlalchemy.orm import Session
 from uuid import UUID
 
 from api import deps

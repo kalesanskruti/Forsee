@@ -12,3 +12,8 @@ slowapi
 httpx
 pytest
 pytest-asyncio
+python-multipart
+pandas
+numpy
+scikit-learn
+bcrypt

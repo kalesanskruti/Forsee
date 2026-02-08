@@ -2,6 +2,7 @@ from sqlalchemy import Column, String, Float, Boolean, ForeignKey, Enum as SqlEn
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
 import enum
+import uuid
 from db.base_class import Base, AuditMixin, SoftDeleteMixin, TenantMixin
 
 
@@ -18,8 +19,10 @@ class Asset(Base, AuditMixin, SoftDeleteMixin, TenantMixin):
 
     name = Column(String, nullable=False)
     type = Column(String, nullable=False) # e.g. Engine, Battery
+    description = Column(String)
     location = Column(String)
     status = Column(String) # OPERATIONAL, MAINTENANCE
+    meta_data = Column(JSON, nullable=True)
     
     assigned_model_id = Column(UUID(as_uuid=True), ForeignKey("ml_model.id"), nullable=True)
     input_schema_id = Column(UUID(as_uuid=True), ForeignKey("input_schema.id"), nullable=True)
@@ -118,11 +121,18 @@ class TrainingJob(Base, AuditMixin, TenantMixin):
 class Prediction(Base, TenantMixin):
     __tablename__ = "prediction"
     
+    # TimescaleDB Requirement: The partitioning column (timestamp) must be part of the primary key.
+    # We override the default 'id' from Base to remove its standalone primary_key=True setting if possible,
+    # but since Base defines it, we must re-declare it with checking how SQLAlchemy allows overriding.
+    # The clean way in SQLAlchemy Declarative is to redefine columns.
+    
     asset_id = Column(UUID(as_uuid=True), ForeignKey("asset.id"), nullable=False)
     model_id = Column(UUID(as_uuid=True), ForeignKey("ml_model.id"), nullable=False)
     result = Column(JSON, nullable=False)
-    # TimescaleDB requires the time column to NOT be indexed by default PK or strictly unique constraints that don't include it. 
-    timestamp = Column(DateTime, default=func.now(), nullable=False)
+    
+    timestamp = Column(DateTime, default=func.now(), nullable=False, primary_key=True)
+    # Override id to be part of PK, not sole PK
+    id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True)
 
 class PredictionFeedback(Base, TenantMixin):
     __tablename__ = "prediction_feedback"

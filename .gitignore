@@ -15,3 +15,9 @@ postgres_data/
 coverage.xml
 *.log
 .pytest_cache/
+
+admin_error.txt
+api_logs.txt
+import_test.txt
+error_log_2.txt
+*.log
